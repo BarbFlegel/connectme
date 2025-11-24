@@ -16,6 +16,7 @@ export default function Login() {
     return <Navigate to="/home" replace />;
   }
 
+  //not needed
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

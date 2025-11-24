@@ -23,7 +23,6 @@ export default function Register() {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Save extra fields in Firestore (username, email, createdAt)
       await setDoc(doc(db, "users", cred.user.uid), {
         username,
         email,
@@ -45,14 +44,14 @@ export default function Register() {
 
   return (
     <div className="container mt-5" style={{ maxWidth: "400px" }}>
-      <h2 className="mb-4 text-center">Créer un compte</h2>
+      <h2 className="mb-4 text-center">Registration</h2>
 
       {error && <div className="alert alert-danger">{error}</div>}
       {info && <div className="alert alert-info">{info}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label>Nom d’utilisateur :</label>
+          <label>User :</label>
           <input
             className="form-control"
             value={username}
@@ -62,7 +61,7 @@ export default function Register() {
         </div>
 
         <div className="mb-3">
-          <label>Adresse e-mail :</label>
+          <label>Email address:</label>
           <input
             className="form-control"
             type="email"
@@ -73,7 +72,7 @@ export default function Register() {
         </div>
 
         <div className="mb-3">
-          <label>Mot de passe :</label>
+          <label>Password:</label>
           <input
             className="form-control"
             type="password"
@@ -84,7 +83,7 @@ export default function Register() {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          S’inscrire
+          Register
         </button>
       </form>
     </div>

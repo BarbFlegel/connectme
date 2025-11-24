@@ -5,7 +5,7 @@ export default function Profile() {
 
   if (!user) return null;
 
-  const displayName = profile?.username || user.email; // ← we will use it
+  const displayName = profile?.username || user.email;
 
   return (
     <div className="container mt-5" style={{ maxWidth: "600px" }}>
