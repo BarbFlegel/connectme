@@ -33,6 +33,18 @@ export default function Navbar() {
               Home
             </NavLink>
           </li>
+
+          <li className="nav-item">
+            <NavLink
+              to="/register"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
+              Register
+            </NavLink>
+          </li>
+
           <li className="nav-item">
             <NavLink
               to="/login"
