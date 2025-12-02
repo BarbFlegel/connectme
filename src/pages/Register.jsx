@@ -51,7 +51,7 @@ export default function Register() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label>User :</label>
+          <label>User:</label>
           <input
             className="form-control"
             value={username}
