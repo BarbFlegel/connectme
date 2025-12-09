@@ -7,39 +7,35 @@ import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import Activities from "./pages/Activities";
 import CreateActivity from "./pages/CreateActivity";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./auth/useAuth";
+import ResendVerification from "./components/ResendVerification";
 
 function PrivateRoute({ children }) {
   const { user, initializing } = useAuth();
 
-  // Loading skeleton
   if (initializing) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+        <div className="spinner-border text-primary" role="status" />
         <p className="mt-3">Just a moment...</p>
       </div>
     );
   }
 
-  //  Not logged in → redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Email not verified → block access
   if (!user.emailVerified) {
     return (
       <div className="container mt-5">
         <h4>Email verification required</h4>
         <p>Please check your inbox and verify your email to continue.</p>
+        <ResendVerification />
       </div>
     );
   }
 
-  //  Allowed
   return children;
 }
 

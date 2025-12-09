@@ -1,126 +1,107 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useAuth } from "../auth/useAuth";
 import { db } from "../firebase";
-import { useAuth } from "../AuthContext";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
 export default function CreateActivity() {
-  const { user, profile } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState("volleyball");
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setLoading(true);
-
+  const onSubmit = async (data) => {
     try {
       await addDoc(collection(db, "activities"), {
-        title,
-        type,
-        location,
-        date,
-        time,
-        description,
-        creatorId: user.uid,
-        creatorName: profile?.username || user.email,
-        participants: [user.uid],
+        ...data,
+        createdBy: user.uid,
         createdAt: serverTimestamp(),
       });
 
-      navigate("/activities");
+      alert("Activity created!");
+      reset();
     } catch (err) {
       console.error("Error creating activity:", err);
+      alert("Failed to create activity");
     }
-
-    setLoading(false);
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
-      <h2 className="mb-4">Create Activity</h2>
+    <div className="container mt-4">
+      <h2>Create Activity</h2>
 
-      <form onSubmit={handleCreate}>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-3">
+        {/* TITLE */}
         <div className="mb-3">
-          <label className="form-label">Title</label>
+          <label className="form-label">Activity Title</label>
           <input
             className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
+            {...register("title", {
+              required: "Title is required",
+              minLength: { value: 3, message: "Must be at least 3 characters" },
+            })}
           />
+          {errors.title && (
+            <small className="text-danger">{errors.title.message}</small>
+          )}
         </div>
 
+        {/* CATEGORY */}
         <div className="mb-3">
-          <label className="form-label">Type</label>
+          <label className="form-label">Category</label>
           <select
-            className="form-select"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            className="form-control"
+            {...register("category", { required: true })}
           >
+            <option value="">Select</option>
             <option value="volleyball">Volleyball</option>
             <option value="running">Running</option>
-            <option value="hiking">Hiking</option>
-            <option value="painting">Painting</option>
             <option value="gym">Gym</option>
-            <option value="boardgames">Board Games</option>
+            <option value="painting">Painting</option>
+            <option value="coffee">Coffee meetup</option>
           </select>
+          {errors.category && (
+            <small className="text-danger">Category is required</small>
+          )}
         </div>
 
+        {/* LOCATION */}
         <div className="mb-3">
           <label className="form-label">Location</label>
           <input
             className="form-control"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Prague 5, park, hall…"
-            required
+            {...register("location", { required: true })}
           />
+          {errors.location && (
+            <small className="text-danger">Location is required</small>
+          )}
         </div>
 
-        <div className="mb-3 d-flex gap-3">
-          <div className="flex-fill">
-            <label className="form-label">Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex-fill">
-            <label className="form-label">Time</label>
-            <input
-              type="time"
-              className="form-control"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-
+        {/* DATE */}
         <div className="mb-3">
-          <label className="form-label">Description</label>
+          <label className="form-label">Date</label>
+          <input
+            type="date"
+            className="form-control"
+            {...register("date", { required: true })}
+          />
+          {errors.date && <small className="text-danger">Date required</small>}
+        </div>
+
+        {/* DESCRIPTION */}
+        <div className="mb-3">
+          <label className="form-label">Description (optional)</label>
           <textarea
             className="form-control"
-            rows="3"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+            {...register("description")}
+          ></textarea>
         </div>
 
-        <button className="btn btn-primary w-100" disabled={loading}>
-          {loading ? "Creating..." : "Create Activity"}
+        <button type="submit" className="btn btn-primary">
+          Create Activity
         </button>
       </form>
     </div>
