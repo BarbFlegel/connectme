@@ -5,17 +5,37 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
-import { useAuth } from "./AuthContext";
+import Activities from "./pages/Activities";
+import CreateActivity from "./pages/CreateActivity";
+import { useAuth } from "./auth/useAuth";
+import ResendVerification from "./components/ResendVerification";
 
 function PrivateRoute({ children }) {
   const { user, initializing } = useAuth();
 
   if (initializing) {
-    return <div className="container mt-4">Loading...</div>;
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary" role="status" />
+        <p className="mt-3">Just a moment...</p>
+      </div>
+    );
   }
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
+  if (!user.emailVerified) {
+    return (
+      <div className="container mt-5">
+        <h4>Email verification required</h4>
+        <p>Please check your inbox and verify your email to continue.</p>
+        <ResendVerification />
+      </div>
+    );
+  }
+
   return children;
 }
 
@@ -28,6 +48,7 @@ function App() {
       <Navbar />
       <div className="container mt-4">
         <Routes>
+          {/* Default redirect */}
           <Route path="/" element={<Navigate to="/home" />} />
 
           {/* Protected routes */}
@@ -39,11 +60,30 @@ function App() {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/profile"
             element={
               <PrivateRoute>
                 <Profile />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/activities"
+            element={
+              <PrivateRoute>
+                <Activities />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/create-activity"
+            element={
+              <PrivateRoute>
+                <CreateActivity />
               </PrivateRoute>
             }
           />

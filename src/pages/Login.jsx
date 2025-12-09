@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Navigate, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../auth/useAuth";
 
 export default function Login() {
   const { user } = useAuth();
@@ -40,6 +40,7 @@ export default function Login() {
           <input
             type="email"
             className="form-control"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -51,6 +52,7 @@ export default function Login() {
           <input
             type="password"
             className="form-control"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

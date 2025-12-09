@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../auth/useAuth";
 
 export default function Navbar() {
   const { user, profile, logout } = useAuth();
@@ -15,8 +15,8 @@ export default function Navbar() {
   const displayName = profile?.username || (user && user.email);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
-      <NavLink to="/home" className="navbar-brand">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm">
+      <NavLink to="/home" className="navbar-brand fw-bold">
         ConnectMe
       </NavLink>
 
@@ -33,7 +33,8 @@ export default function Navbar() {
       </button>
 
       <div className="collapse navbar-collapse" id="navbarNav">
-        <ul className="navbar-nav ms-auto">
+        <ul className="navbar-nav ms-auto align-items-lg-center">
+          {/* Greeting */}
           {user && (
             <li className="nav-item me-3 d-flex align-items-center">
               <span className="navbar-text small">
@@ -42,30 +43,77 @@ export default function Navbar() {
             </li>
           )}
 
-          <li className="nav-item">
-            <NavLink
-              to="/home"
-              className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
-              }
-            >
-              Home
-            </NavLink>
-          </li>
-
+          {/* ALWAYS visible if logged in */}
           {user && (
-            <li className="nav-item">
-              <NavLink
-                to="/profile"
-                className={({ isActive }) =>
-                  isActive ? "nav-link active" : "nav-link"
-                }
-              >
-                Profile
-              </NavLink>
-            </li>
+            <>
+              <li className="nav-item">
+                <NavLink
+                  to="/home"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  Home
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
+                  to="/activities"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  Activities
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
+                  to="/my-activities"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  My Activities
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
+                  to="/create-activity"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  + Create Activity
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    isActive ? "nav-link active" : "nav-link"
+                  }
+                >
+                  Profile
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-link nav-link text-danger"
+                  type="button"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
           )}
 
+          {/* PUBLIC MENU (not logged-in) */}
           {!user && (
             <>
               <li className="nav-item">
@@ -89,18 +137,6 @@ export default function Navbar() {
                 </NavLink>
               </li>
             </>
-          )}
-
-          {user && (
-            <li className="nav-item">
-              <button
-                onClick={handleLogout}
-                className="btn btn-link nav-link"
-                type="button"
-              >
-                Logout
-              </button>
-            </li>
           )}
         </ul>
       </div>

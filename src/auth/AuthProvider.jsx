@@ -1,9 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
+import { auth, db } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "./firebase";
 import { doc, getDoc } from "firebase/firestore";
-
-const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -11,16 +10,16 @@ export function AuthProvider({ children }) {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
 
       if (firebaseUser) {
         try {
-          const ref = doc(db, "users", firebaseUser.uid);
+          const ref = doc(db, "profiles", firebaseUser.uid);
           const snap = await getDoc(ref);
           setProfile(snap.exists() ? snap.data() : null);
-        } catch (e) {
-          console.error("Error loading profile:", e);
+        } catch (err) {
+          console.error("Error loading profile:", err.message);
           setProfile(null);
         }
       } else {
@@ -30,19 +29,16 @@ export function AuthProvider({ children }) {
       setInitializing(false);
     });
 
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    await signOut(auth);
+  };
 
   return (
     <AuthContext.Provider value={{ user, profile, initializing, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useAuth() {
-  return useContext(AuthContext);
 }
